@@ -427,7 +427,7 @@ export default function SorryMessenger() {
 
         <div
           ref={screenRef}
-          className="relative w-[375px] h-[600px] rounded-[34px] overflow-hidden flex flex-col"
+          className="relative w-[375px] h-[460px] rounded-[34px] overflow-hidden flex flex-col"
           style={{
             background: "linear-gradient(180deg, #eaf6e0 0%, #f4faec 100%)",
             transform: shake ? "translateX(-4px)" : "none",
