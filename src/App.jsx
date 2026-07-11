@@ -285,15 +285,22 @@ export default function SorryMessenger() {
     jump({ x: e.clientX, y: e.clientY });
   };
 
+  /* ── 아래부터는 디자인 전용: 키 타일을 이파리 느낌으로 렌더 ── */
   const key = (code, label, w) => (
     <div
       key={code}
-      className="h-9 rounded-md flex items-center justify-center text-[13px] transition"
+      className="h-9 rounded-xl flex items-center justify-center text-[13px] font-medium transition-all duration-150"
       style={{
         width: w ?? 36,
-        background: active === code ? "#ffd6e0" : "#2b2833",
-        color: active === code ? "#3d1424" : "#8b8697",
-        border: "1px solid #3d3949",
+        background: active === code
+          ? "linear-gradient(180deg, #fff6b8 0%, #ffe37a 100%)"
+          : "linear-gradient(180deg, #7bbf5e 0%, #5da33f 100%)",
+        color: active === code ? "#6b4c00" : "#f3fbe8",
+        border: active === code ? "1px solid #f0cf4d" : "1px solid #4d8a33",
+        boxShadow: active === code
+          ? "0 2px 0 #d9ad2e, inset 0 1px 0 rgba(255,255,255,.6)"
+          : "0 2px 0 #3f7429, inset 0 1px 0 rgba(255,255,255,.25)",
+        transform: active === code ? "translateY(1px)" : "translateY(0)",
       }}
     >
       {label}
@@ -302,35 +309,112 @@ export default function SorryMessenger() {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col items-center justify-center gap-5 py-8"
-      style={{ background: "radial-gradient(circle at 50% 0%, #2a2130 0%, #14101a 65%)" }}
+      className="min-h-screen w-full flex flex-col items-center justify-center gap-5 py-8 relative overflow-hidden"
+      style={{
+        background: "linear-gradient(180deg, #a8dcf0 0%, #cdeaf5 32%, #eaf6cf 55%, #bfe08a 78%, #8fc85e 100%)",
+      }}
       onPointerMove={onMove}
     >
-      <div className="text-center">
-        <h1 className="text-[#ffd6e0] text-lg font-bold tracking-tight">미안한 메신저</h1>
-        <p className="text-neutral-500 text-[11px] mt-0.5">미안하다고는 합니다. 안 고칩니다.</p>
+      {/* ── 배경 장식: 해, 구름, 풀밭 (순수 장식, pointer-events-none) ── */}
+      <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: 28, right: 56, width: 84, height: 84,
+            background: "radial-gradient(circle, #fff2a0 0%, #ffe066 55%, rgba(255,224,102,0) 75%)",
+            boxShadow: "0 0 40px 12px rgba(255,224,102,0.55)",
+            animation: "sunGlow 5s ease-in-out infinite",
+          }}
+        />
+        <svg style={{ position: "absolute", top: 60, left: -40, width: 180, opacity: 0.9, animation: "cloudDrift 38s linear infinite" }} viewBox="0 0 200 80">
+          <ellipse cx="50" cy="45" rx="45" ry="24" fill="#ffffff" />
+          <ellipse cx="95" cy="32" rx="35" ry="26" fill="#ffffff" />
+          <ellipse cx="135" cy="46" rx="40" ry="22" fill="#ffffff" />
+        </svg>
+        <svg style={{ position: "absolute", top: 120, left: -60, width: 130, opacity: 0.75, animation: "cloudDrift 52s linear infinite -12s" }} viewBox="0 0 200 80">
+          <ellipse cx="50" cy="45" rx="40" ry="20" fill="#ffffff" />
+          <ellipse cx="110" cy="34" rx="34" ry="22" fill="#ffffff" />
+        </svg>
+        <svg
+          style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 130 }}
+          viewBox="0 0 800 130" preserveAspectRatio="none"
+        >
+          <path d="M0,60 C120,20 220,90 340,50 C460,15 560,85 680,45 C740,25 780,55 800,40 L800,130 L0,130 Z" fill="#6fa844" />
+          <path d="M0,90 C140,60 260,110 400,80 C540,55 660,110 800,80 L800,130 L0,130 Z" fill="#5b9236" />
+          {Array.from({ length: 26 }).map((_, i) => {
+            const x = 15 + i * 31 + (i % 3) * 6;
+            const h = 14 + (i % 4) * 6;
+            return (
+              <path
+                key={i}
+                d={`M${x},112 Q${x - 4},${112 - h} ${x},${112 - h - 6} Q${x + 4},${112 - h} ${x},112`}
+                fill="#4d8a30"
+                style={{ transformOrigin: `${x}px 112px`, animation: `grassSway 3.4s ease-in-out infinite`, animationDelay: `${(i % 5) * 0.3}s` }}
+              />
+            );
+          })}
+        </svg>
+        <span style={{ position: "absolute", bottom: 96, left: "18%", fontSize: 18 }}>🌼</span>
+        <span style={{ position: "absolute", bottom: 108, left: "62%", fontSize: 16 }}>🌸</span>
+        <span style={{ position: "absolute", bottom: 90, left: "82%", fontSize: 18 }}>🌼</span>
+        <span style={{ position: "absolute", bottom: 104, left: "38%", fontSize: 14 }}>🐝</span>
+      </div>
+
+      <style>{`
+        @keyframes cloudDrift { from { transform: translateX(0); } to { transform: translateX(1100px); } }
+        @keyframes sunGlow { 0%,100% { opacity: 1; } 50% { opacity: 0.75; } }
+        @keyframes grassSway { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+      `}</style>
+
+      <div className="text-center relative z-10">
+        <h1
+          className="text-xl font-extrabold tracking-tight"
+          style={{ color: "#2f5c1e", textShadow: "0 1px 0 rgba(255,255,255,.6)" }}
+        >
+          🌿 미안한 메신저 🌻
+        </h1>
+        <p className="text-[11px] mt-0.5" style={{ color: "#4a6b33" }}>
+          미안하다고는 합니다. 안 고칩니다.
+        </p>
       </div>
 
       <div
-        className="relative rounded-[44px] p-3"
-        style={{ background: "#2b2833", boxShadow: "0 0 0 2px #4a4557, 0 30px 60px rgba(0,0,0,.6)" }}
+        className="relative rounded-[44px] p-3 z-10"
+        style={{
+          background: "linear-gradient(160deg, #a9773f 0%, #8a5a2c 55%, #6e4520 100%)",
+          boxShadow: "0 0 0 2px #5c3c1c, 0 30px 60px rgba(30,20,5,.45)",
+        }}
       >
+        <span style={{ position: "absolute", top: -10, left: -8, fontSize: 20 }}>🍃</span>
+        <span style={{ position: "absolute", bottom: -10, right: -6, fontSize: 20 }}>🍃</span>
+
         <div
           ref={screenRef}
           className="relative w-[375px] h-[600px] rounded-[34px] overflow-hidden flex flex-col"
-          style={{ background: "#b2c7d9", transform: shake ? "translateX(-4px)" : "none", transition: "transform 60ms" }}
+          style={{
+            background: "linear-gradient(180deg, #eaf6e0 0%, #f4faec 100%)",
+            transform: shake ? "translateX(-4px)" : "none",
+            transition: "transform 60ms",
+          }}
         >
-          <div className="h-11 shrink-0 flex items-center justify-center relative" style={{ background: "#9bb0c2" }}>
-            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-24 h-5 rounded-full bg-[#2b2833]" />
-            <span className="mt-3 text-xs font-semibold text-slate-800">지훈</span>
+          <div
+            className="h-11 shrink-0 flex items-center justify-center relative"
+            style={{ background: "linear-gradient(180deg, #8fbf5a 0%, #78ab46 100%)" }}
+          >
+            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-24 h-5 rounded-full" style={{ background: "#3f5a28" }} />
+            <span className="mt-3 text-xs font-semibold" style={{ color: "#233d12" }}>🌱 지훈</span>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-2">
             {msgs.map((m, i) => (
               <div key={i} className={`flex ${m.me ? "justify-end" : "justify-start"}`}>
                 <div
-                  className="max-w-[75%] px-3 py-2 rounded-2xl text-[15px] leading-snug break-all shadow-sm"
-                  style={m.me ? { background: "#fae100", color: "#191600" } : { background: "#fff", color: "#191919" }}
+                  className="max-w-[75%] px-3 py-2 rounded-2xl text-[15px] leading-snug break-all"
+                  style={
+                    m.me
+                      ? { background: "linear-gradient(180deg, #ffe066 0%, #fdd835 100%)", color: "#4a3b00", boxShadow: "0 1px 2px rgba(0,0,0,.12)" }
+                      : { background: "#ffffff", color: "#233d12", boxShadow: "0 1px 2px rgba(0,0,0,.08)" }
+                  }
                 >
                   {m.t}
                 </div>
@@ -338,27 +422,33 @@ export default function SorryMessenger() {
             ))}
             {typing && (
               <div className="flex justify-start">
-                <div className="px-3 py-2 rounded-2xl bg-white text-neutral-400 text-sm">···</div>
+                <div className="px-3 py-2 rounded-2xl text-sm" style={{ background: "#ffffff", color: "#8aa377" }}>···</div>
               </div>
             )}
           </div>
 
           {toast && (
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/75 text-white text-xs whitespace-nowrap z-30">
+            <div
+              className="absolute bottom-20 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full text-white text-xs whitespace-nowrap z-30"
+              style={{ background: "rgba(50,70,30,0.85)" }}
+            >
               {toast}
             </div>
           )}
 
-          <div className="shrink-0 px-2 py-2 flex items-end gap-2" style={{ background: "#f7f7f8" }}>
-            <div className="flex-1 min-h-[38px] max-h-28 overflow-y-auto bg-white rounded-2xl px-3 py-2 text-[15px] break-all border border-neutral-200">
+          <div className="shrink-0 px-2 py-2 flex items-end gap-2" style={{ background: "#eef7e1" }}>
+            <div
+              className="flex-1 min-h-[38px] max-h-28 overflow-y-auto rounded-2xl px-3 py-2 text-[15px] break-all"
+              style={{ background: "#ffffff", border: "1px solid #cfe6b0" }}
+            >
               {display ? (
                 <>
                   {text}
-                  <span className="bg-yellow-200/70 rounded">{renderBuf(buf)}</span>
-                  <span className="inline-block w-px h-[18px] bg-neutral-800 align-middle animate-pulse" />
+                  <span className="rounded" style={{ background: "rgba(255,224,102,.6)" }}>{renderBuf(buf)}</span>
+                  <span className="inline-block w-px h-[18px] align-middle animate-pulse" style={{ background: "#4a6b33" }} />
                 </>
               ) : (
-                <span className="text-neutral-400">키보드로 입력하세요</span>
+                <span style={{ color: "#9fb586" }}>키보드로 입력하세요</span>
               )}
             </div>
             <button
@@ -367,8 +457,11 @@ export default function SorryMessenger() {
               disabled={!display.trim()}
               className="shrink-0 w-[38px] h-[38px] rounded-full text-sm font-bold disabled:opacity-40 z-20"
               style={{
-                background: caught ? "#fae100" : "#e6e6e8",
-                color: "#191919",
+                background: caught
+                  ? "linear-gradient(180deg, #ffe066 0%, #fdd835 100%)"
+                  : "linear-gradient(180deg, #dcefc7 0%, #c5e2a5 100%)",
+                color: "#3d4a1f",
+                border: caught ? "1px solid #e0b400" : "1px solid #a9c988",
                 transform: `translate(${pos.x}px, ${pos.y}px)`,
                 transition: "transform 140ms cubic-bezier(.34,1.56,.64,1)",
               }}
@@ -380,21 +473,21 @@ export default function SorryMessenger() {
       </div>
 
       {/* 실제 키보드 상태 — 누른 키와 화면의 글자가 다른 게 눈에 보여야 개그가 완성됨 */}
-      <div className="select-none">
+      <div className="select-none relative z-10">
         {ROWS.map((row, ri) => (
           <div key={ri} className="flex justify-center gap-1 mb-1" style={{ paddingLeft: ri * 14 }}>
             {row.map((code) => key(code, LAYOUT[code][0]))}
           </div>
         ))}
         <div className="flex justify-center gap-1">
-          {key("Space", "space", 176)}
+          {key("Space", "space 🌾", 176)}
           {key("Backspace", "⌫", 64)}
         </div>
       </div>
 
-      <p className="text-neutral-500 text-[11px] text-center">
-        전송 시도 <span className="text-[#ffd6e0] font-bold">{attempts}</span>회 · 오타율{" "}
-        <span className="text-[#ffd6e0] font-bold">{Math.round(rateAt(strokes) * 100)}%</span>
+      <p className="text-[11px] text-center relative z-10" style={{ color: "#2f5c1e" }}>
+        전송 시도 <span className="font-bold" style={{ color: "#8a5a2c" }}>{attempts}</span>회 · 오타율{" "}
+        <span className="font-bold" style={{ color: "#8a5a2c" }}>{Math.round(rateAt(strokes) * 100)}%</span>
       </p>
     </div>
   );
