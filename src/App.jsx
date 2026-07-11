@@ -405,12 +405,12 @@ export default function SorryMessenger() {
 
       <div className="text-center relative z-10">
         <h1
-          className="text-xl font-extrabold tracking-tight"
+          className="text-3xl font-extrabold tracking-tight"
           style={{ color: "#2f5c1e", textShadow: "0 1px 0 rgba(255,255,255,.6)" }}
         >
           🌿 미안 사자가 눌렀어 🌻
         </h1>
-        <p className="text-[11px] mt-0.5" style={{ color: "#4a6b33" }}>
+        <p className="text-base mt-1" style={{ color: "#4a6b33" }}>
           미안하다고는 합니다. 안 고칩니다.
         </p>
       </div>
@@ -438,8 +438,7 @@ export default function SorryMessenger() {
             className="h-11 shrink-0 flex items-center justify-center relative"
             style={{ background: "linear-gradient(180deg, #8fbf5a 0%, #78ab46 100%)" }}
           >
-            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-24 h-5 rounded-full" style={{ background: "#3f5a28" }} />
-            <span className="mt-3 text-xs font-semibold" style={{ color: "#233d12" }}>🌱 지훈</span>
+            <span className="text-base font-semibold" style={{ color: "#233d12" }}>🌱 지훈</span>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-2">
