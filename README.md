@@ -14,3 +14,5 @@ npm run dev
 명령 실행 후 터미널에 나오는 주소(기본 `http://localhost:5173`)를 브라우저로 열면 됩니다.
 
 종료는 `Ctrl+C`.
+
+![Uploading image.png…]()
