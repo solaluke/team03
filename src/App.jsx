@@ -1,4 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import lionImg from "./assets/lion.png";
+
+const LION_W = 58;
+const LION_H = 62;
 
 /* ─────────────── 한글 오토마타 테이블 ─────────────── */
 const CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
@@ -153,12 +157,43 @@ export default function SorryMessenger() {
   const screenRef = useRef(null);
   const replyIdx = useRef(0);
   const ref = useRef({});
+  const keyboardRef = useRef(null);
+  const keyElRefs = useRef({});
+  const [lionPos, setLionPos] = useState(null);
+  const [stomp, setStomp] = useState(false);
+  const [stompId, setStompId] = useState(0);
 
   const display = text + renderBuf(buf);
   const caught = dodges >= DODGE_LIMIT;
   ref.current = { text, buf, strokes, caught, revoked, display };
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: 9e9, behavior: "smooth" }); }, [msgs, typing]);
+
+  /* 🦁 사자를 해당 키 위로 이동시키는 함수 */
+  const landLionOn = useCallback((code) => {
+    const kb = keyboardRef.current;
+    const el = keyElRefs.current[code];
+    if (!kb || !el) return;
+    const kbRect = kb.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    setLionPos({
+      x: elRect.left - kbRect.left + elRect.width / 2,
+      y: elRect.top - kbRect.top + elRect.height * 0.3,
+    });
+  }, []);
+
+  /* 시작 위치: 스페이스바 위에서 대기 */
+  useEffect(() => { landLionOn("Space"); }, [landLionOn]);
+
+  /* 눌린 키가 바뀔 때마다 사자가 쿵 밟는다 */
+  useEffect(() => {
+    if (!active) return;
+    landLionOn(active);
+    setStomp(true);
+    setStompId((id) => id + 1);
+    const t = setTimeout(() => setStomp(false), 140);
+    return () => clearTimeout(t);
+  }, [active, landLionOn]);
 
   const sorry = useCallback((msg) => {
     setToast(msg ?? SORRY[Math.floor(Math.random() * SORRY.length)]);
@@ -289,6 +324,7 @@ export default function SorryMessenger() {
   const key = (code, label, w) => (
     <div
       key={code}
+      ref={(el) => { if (el) keyElRefs.current[code] = el; }}
       className="h-9 rounded-xl flex items-center justify-center text-[13px] font-medium transition-all duration-150"
       style={{
         width: w ?? 36,
@@ -364,6 +400,7 @@ export default function SorryMessenger() {
         @keyframes cloudDrift { from { transform: translateX(0); } to { transform: translateX(1100px); } }
         @keyframes sunGlow { 0%,100% { opacity: 1; } 50% { opacity: 0.75; } }
         @keyframes grassSway { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+        @keyframes dustPop { 0% { opacity: .55; transform: scale(.4); } 100% { opacity: 0; transform: scale(1.8); } }
       `}</style>
 
       <div className="text-center relative z-10">
@@ -472,8 +509,21 @@ export default function SorryMessenger() {
         </div>
       </div>
 
+      <p className="text-[11px] text-center relative z-10 mb-1" style={{ color: "#2f5c1e" }}>
+        🦁 타자를 치면 사자가 그 키를 쿵 밟아요
+      </p>
+
       {/* 실제 키보드 상태 — 누른 키와 화면의 글자가 다른 게 눈에 보여야 개그가 완성됨 */}
-      <div className="select-none relative z-10">
+      <div
+        ref={keyboardRef}
+        className="select-none relative z-10 rounded-[28px] px-3 pt-3 pb-2.5"
+        style={{
+          background: "rgba(255,255,255,0.38)",
+          backdropFilter: "blur(8px)",
+          boxShadow: "0 12px 28px rgba(47,92,30,0.18), inset 0 1px 0 rgba(255,255,255,0.7)",
+          border: "1px solid rgba(255,255,255,0.5)",
+        }}
+      >
         {ROWS.map((row, ri) => (
           <div key={ri} className="flex justify-center gap-1 mb-1" style={{ paddingLeft: ri * 14 }}>
             {row.map((code) => key(code, LAYOUT[code][0]))}
@@ -483,9 +533,44 @@ export default function SorryMessenger() {
           {key("Space", "space 🌾", 176)}
           {key("Backspace", "⌫", 64)}
         </div>
+
+        {lionPos && (
+          <>
+            <div
+              key={stompId}
+              className="pointer-events-none absolute rounded-full"
+              style={{
+                left: lionPos.x - 16,
+                top: lionPos.y + 12,
+                width: 32,
+                height: 10,
+                background: "radial-gradient(ellipse at center, rgba(90,65,25,0.4) 0%, rgba(90,65,25,0) 72%)",
+                animation: "dustPop 260ms ease-out forwards",
+                zIndex: 39,
+              }}
+            />
+            <img
+              src={lionImg}
+              alt="사자"
+              className="pointer-events-none select-none absolute"
+              style={{
+                width: LION_W,
+                height: LION_H,
+                objectFit: "contain",
+                left: 0,
+                top: 0,
+                transform: `translate(${lionPos.x - LION_W / 2}px, ${lionPos.y - LION_H}px) scale(${stomp ? 1.06 : 1}) scaleY(${stomp ? 0.82 : 1})`,
+                transformOrigin: "bottom center",
+                transition: "transform 150ms cubic-bezier(.34,1.56,.64,1)",
+                filter: "drop-shadow(0 5px 4px rgba(30,40,10,.35))",
+                zIndex: 40,
+              }}
+            />
+          </>
+        )}
       </div>
 
-      <p className="text-[11px] text-center relative z-10" style={{ color: "#2f5c1e" }}>
+      <p className="text-[11px] text-center relative z-10 mt-2" style={{ color: "#2f5c1e" }}>
         전송 시도 <span className="font-bold" style={{ color: "#8a5a2c" }}>{attempts}</span>회 · 오타율{" "}
         <span className="font-bold" style={{ color: "#8a5a2c" }}>{Math.round(rateAt(strokes) * 100)}%</span>
       </p>
