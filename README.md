@@ -15,4 +15,5 @@ npm run dev
 
 종료는 `Ctrl+C`.
 
-![Uploading image.png…]()
+<img width="1008" height="1066" alt="KakaoTalk_20260711_165025302" src="https://github.com/user-attachments/assets/f0829c61-25da-4816-ae68-f2d6d193a294" />
+
