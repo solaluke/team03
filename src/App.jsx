@@ -106,6 +106,20 @@ const KEYS = [
 
 const DODGE_LIMIT = 6;
 
+/* ─────────────── 물리 키보드(두벌식) 매핑 ─────────────── */
+const PHYS_KEY_MAP = {
+  KeyQ: "ㅂ", KeyW: "ㅈ", KeyE: "ㄷ", KeyR: "ㄱ", KeyT: "ㅅ",
+  KeyY: "ㅛ", KeyU: "ㅕ", KeyI: "ㅑ", KeyO: "ㅐ", KeyP: "ㅔ",
+  KeyA: "ㅁ", KeyS: "ㄴ", KeyD: "ㅇ", KeyF: "ㄹ", KeyG: "ㅎ",
+  KeyH: "ㅗ", KeyJ: "ㅓ", KeyK: "ㅏ", KeyL: "ㅣ",
+  KeyZ: "ㅋ", KeyX: "ㅌ", KeyC: "ㅊ", KeyV: "ㅍ", KeyB: "ㅠ",
+  KeyN: "ㅜ", KeyM: "ㅡ",
+};
+const PHYS_KEY_MAP_SHIFT = {
+  KeyQ: "ㅃ", KeyW: "ㅉ", KeyE: "ㄸ", KeyR: "ㄲ", KeyT: "ㅆ",
+  KeyO: "ㅒ", KeyP: "ㅖ",
+};
+
 export default function CursedChat() {
   const [msgs, setMsgs] = useState([{ me: false, t: "왔어? 어디쯤이야" }]);
   const [text, setText] = useState("");
@@ -124,6 +138,37 @@ export default function CursedChat() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 9e9, behavior: "smooth" });
   }, [msgs, typing]);
+
+  /* 실제 키보드 입력 */
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+
+      if (e.code === "Backspace") {
+        e.preventDefault();
+        del();
+        return;
+      }
+      if (e.code === "Enter") {
+        e.preventDefault();
+        send();
+        return;
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        setText((t) => t + " ");
+        setBuf(EMPTY);
+        return;
+      }
+      const jamo = e.shiftKey ? PHYS_KEY_MAP_SHIFT[e.code] : PHYS_KEY_MAP[e.code];
+      if (jamo) {
+        e.preventDefault();
+        tap(jamo);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [text, buf, display]);
 
   const tap = (jamo) => {
     const r = pushJamo(text, buf, sabotage(jamo));
