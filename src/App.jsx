@@ -408,7 +408,7 @@ export default function SorryMessenger() {
           className="text-xl font-extrabold tracking-tight"
           style={{ color: "#2f5c1e", textShadow: "0 1px 0 rgba(255,255,255,.6)" }}
         >
-          🌿 미안한 메신저 🌻
+          🌿 미안 사자가 눌렀어 🌻
         </h1>
         <p className="text-[11px] mt-0.5" style={{ color: "#4a6b33" }}>
           미안하다고는 합니다. 안 고칩니다.
