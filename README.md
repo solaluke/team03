@@ -15,5 +15,5 @@ npm run dev
 
 종료는 `Ctrl+C`.
 
-<img width="1008" height="1066" alt="KakaoTalk_20260711_165025302" src="https://github.com/user-attachments/assets/f0829c61-25da-4816-ae68-f2d6d193a294" />
+<img width="472" height="528" alt="KakaoTalk_20260711_171627153-removebg-preview" src="https://github.com/user-attachments/assets/1454124b-df46-4179-885d-fa5b82e028e4" />
 
